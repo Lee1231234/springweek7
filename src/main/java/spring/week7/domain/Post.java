@@ -24,11 +24,15 @@ public class Post extends Timestamped{
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
-    private String category;
+//    @Column(nullable = false)
+//    private String category;
 
     @Column(length = 500)
     private String image;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_category_id",insertable = false, updatable = false)
+    private PostCategory category;
 
     @ManyToOne
     @JoinColumn(name = "Member_id", nullable = false)
@@ -37,15 +41,19 @@ public class Post extends Timestamped{
     public void update(PostRequestDto postRequestDto) {
         this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
-        this.category = postRequestDto.getCategory();
         this.image =  postRequestDto.getImage();
     }
 
     public Post(PostRequestDto postRequestDto, Member member) {
         this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
-        this.category = postRequestDto.getCategory();
         this.image = postRequestDto.getImage();
         this.member = member;
     }
+
+    public void mappingCategory(PostCategory postCategory){
+        this.category = postCategory;
+        postCategory.mappingPost(this);
+    }
+
 }

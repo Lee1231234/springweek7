@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import spring.week7.Dto.Request.LoginRequestDto;
 import spring.week7.Dto.Request.MemberRequestDto;
+import spring.week7.Dto.Response.MemberResponseDto;
 import spring.week7.Service.MemberService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,8 +21,9 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping(value = "/api/member/signup")
-    public ResponseEntity<?> signup(@RequestBody @Valid MemberRequestDto requestDto){
-        return memberService.createMember(requestDto);
+    public ResponseEntity<MemberResponseDto> signup(@RequestBody @Valid MemberRequestDto requestDto){
+        memberService.createMember(requestDto);
+        return ResponseEntity.ok(new MemberResponseDto(true,"로그인 성공"));
     }
 
     @PostMapping(value = "/api/member/login")

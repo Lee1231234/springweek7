@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import spring.week7.Auth.Authority;
 import spring.week7.Dto.TokenDto;
+import spring.week7.Errorhandler.BusinessException;
+import spring.week7.Errorhandler.ErrorCode;
 import spring.week7.Repository.RefreshTokenRepository;
 import spring.week7.domain.Member;
 import spring.week7.domain.RefreshToken;
@@ -82,7 +84,7 @@ public class TokenProvider {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || AnonymousAuthenticationToken.class.
                 isAssignableFrom(authentication.getClass())) {
-            return null;
+            throw new BusinessException("Member가 존재하지 않습니다.", ErrorCode.MEMBER_NOT_EXIST);
         }
         return ((UserDetailsImpl) authentication.getPrincipal()).getMember();
     }
@@ -93,6 +95,7 @@ public class TokenProvider {
             return true;
         } catch (SecurityException | MalformedJwtException e) {
             log.info("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
+
         } catch (ExpiredJwtException e) {
             log.info("Expired JWT token, 만료된 JWT token 입니다.");
         } catch (UnsupportedJwtException e) {

@@ -3,15 +3,19 @@ package spring.week7.Service;
 
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import spring.week7.Dto.Request.PostRequestDto;
 import spring.week7.Dto.Response.PostResponseDto;
+import spring.week7.Repository.PostCategoryRepository;
 import spring.week7.Repository.PostRepository;
 import spring.week7.domain.Member;
 import spring.week7.domain.Post;
+import spring.week7.domain.PostCategory;
 
 import javax.transaction.Transactional;
 
@@ -24,6 +28,7 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final PostCategoryRepository postCategoryRepository;
 
     // 게시물 상세내용 가져오기
     public Post findPostByID(Long id) {
@@ -36,7 +41,13 @@ public class PostService {
     // 게시물 생성
     @Transactional
     public Post postCreate(PostRequestDto postRequestDto, Member member) {
-        Post post = new Post(postRequestDto, member);
+
+        Post post = Post.builder()
+                .title(postRequestDto.getTitle())
+                .content(postRequestDto.getContent())
+                .category(postCategoryRepository.findByName(postRequestDto.getCategory()))
+                .member(member)
+                .build();
 
         return postRepository.save(post);
     }
@@ -91,5 +102,13 @@ public class PostService {
         return result;
     }
 
+    //카테고리 추가
+    public PostCategory categoryAdd(String categoryName) {
+
+        PostCategory postCategory = new PostCategory();
+        postCategory.setName(categoryName);
+
+        return postCategoryRepository.save(postCategory);
+    }
 
 }//class

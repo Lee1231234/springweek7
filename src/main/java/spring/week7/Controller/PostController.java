@@ -8,8 +8,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import spring.week7.Dto.Request.PostRequestDto;
 import spring.week7.Dto.Response.PostResponseDto;
+import spring.week7.Repository.PostCategoryRepository;
 import spring.week7.Service.PostService;
 import spring.week7.domain.Post;
+import spring.week7.domain.PostCategory;
 import spring.week7.domain.UserDetailsImpl;
 
 import java.util.List;
@@ -20,6 +22,8 @@ public class PostController {
 
     @Autowired
     private final PostService postService;
+    @Autowired
+    private PostCategoryRepository postCategoryRepository;
 
     // 게시물 상세내용 가져오기
     @GetMapping("api/post/{postId}")
@@ -30,15 +34,15 @@ public class PostController {
     //게시물 생성
     @PostMapping("api/auth/post")
     public Post createPost(@RequestBody PostRequestDto postRequestDto,
-                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return postService.postCreate( postRequestDto, userDetails.getMember());
+                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return postService.postCreate(postRequestDto, userDetails.getMember());
     }
 
 
     // 게시물 수정
     @PutMapping("/api/auth/post/{postId}")
     public Post editPost(@PathVariable(name = "postId") Long id,
-                       @RequestBody PostRequestDto postRequestDto,
+                         @RequestBody PostRequestDto postRequestDto,
                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return postService.postEdit(id, postRequestDto, userDetails.getMember());
     }
@@ -55,6 +59,13 @@ public class PostController {
     @GetMapping("/api/post/search")
     public List<PostResponseDto> searchPost(@RequestParam("query") String keyword) {
         return postService.postSearch(keyword);
+    }
+
+    // 카테고리 추가
+    @PostMapping("/api/post/category/add")
+    public PostCategory addCategory(
+            @RequestParam(value = "categoryName") String categoryName) {
+        return postService.categoryAdd(categoryName);
     }
 }
 

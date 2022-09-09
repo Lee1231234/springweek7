@@ -9,6 +9,7 @@ import spring.week7.Dto.Request.LoginRequestDto;
 import spring.week7.Dto.Request.MemberRequestDto;
 import spring.week7.Dto.Response.MemberResponseDto;
 import spring.week7.Dto.TokenDto;
+import spring.week7.Errorhandler.BusinessException;
 import spring.week7.Jwt.TokenProvider;
 import spring.week7.Repository.MemberRepository;
 import spring.week7.domain.Member;
@@ -16,6 +17,9 @@ import spring.week7.domain.Member;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
+
+import static spring.week7.Errorhandler.ErrorCode.EMAIL_DUPLICATION;
+import static spring.week7.Errorhandler.ErrorCode.JWT_NOT_PERMIT;
 
 @Service
 @RequiredArgsConstructor
@@ -25,61 +29,44 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public ResponseEntity<?> createMember(MemberRequestDto requestDto) {
-        if (null != isPresentMember(requestDto.getEmail())) {
-            return  Request("회원가입 실패",false);
-        }
-
-
-
-        Member member = Member.builder()
-                .email(requestDto.getEmail())
-                .password(passwordEncoder.encode(requestDto.getPassword()))
-                .build();
+    public void createMember(MemberRequestDto requestDto) {
+        //만들때는 bool값을 true로
+        isPresentMember(requestDto.getEmail(),true);
+        Member member = new Member(requestDto,passwordEncoder);
         memberRepository.save(member);
-        return Request("회원가입 성공",true);
+
     }
 
     public ResponseEntity<?> login(LoginRequestDto requestDto, HttpServletResponse response) {
-        Member member = isPresentMember(requestDto.getEmail());
-        if (null == member) {
-            return Request("로그인 실패",false);
-        }
-
-        if (!member.validatePassword(passwordEncoder, requestDto.getPassword())) {
-            return Request("로그인 실패",false);
-        }
-
-
+        //체크할때는 bool를 false로
+        Member member = isPresentMember(requestDto.getEmail(),false);
+        member.validatePassword(passwordEncoder, requestDto.getPassword());
         TokenDto tokenDto = tokenProvider.generateTokenDto(member);
         tokenToHeaders(tokenDto, response);
-
-        return ResponseEntity.ok(
-                MemberResponseDto.builder()
-                        .ok(true)
-                        .message("로그인 성공")
-                        .Authorization("Bearer " + tokenDto.getAccessToken())
-                        .RefreshToken(tokenDto.getRefreshToken())
-                        .build()
-        );
+        return ResponseEntity.ok(new MemberResponseDto(tokenDto));
     }
 
     public ResponseEntity<?> logout(HttpServletRequest request) {
-        if (!tokenProvider.validateToken(request.getHeader("Refresh-Token"))) {
-            return ResponseEntity.badRequest().body("Token이 유효하지 않습니다.");
-        }
+       if(!tokenProvider.validateToken(request.getHeader("Refresh-Token"))){
+           throw new BusinessException("잘못된 JWT 토큰입니다",JWT_NOT_PERMIT);
+       }
         Member member = tokenProvider.getMemberFromAuthentication();
-        if (null == member) {
-            return ResponseEntity.badRequest().body("사용자를 찾을 수 없습니다.");
-        }
 
         return tokenProvider.deleteRefreshToken(member);
     }
 
     @Transactional(readOnly = true)
-    public Member isPresentMember(String email) {
+    public Member isPresentMember(String email,boolean bool) {
         Optional<Member> optionalMember = memberRepository.findByEmail(email);
-        return optionalMember.orElse(null);
+        if(!bool){
+            return optionalMember.orElseThrow(
+                    () -> new BusinessException("로그인 실패.",EMAIL_DUPLICATION)
+
+            );
+        }else{
+            return optionalMember.orElse(null);
+        }
+
     }
 
     public void tokenToHeaders(TokenDto tokenDto, HttpServletResponse response) {
@@ -87,22 +74,5 @@ public class MemberService {
         response.addHeader("Refresh-Token", tokenDto.getRefreshToken());
         response.addHeader("Access-Token-Expire-Time", tokenDto.getAccessTokenExpiresIn().toString());
     }
-    public ResponseEntity<?> Request(String message,boolean bool){
-        if(bool){
-            return ResponseEntity.ok(
-                    MemberResponseDto.builder()
-                            .ok(bool)
-                            .message(message)
-                            .build()
-            );
-        }else{
-            return ResponseEntity.badRequest().body(
-                    MemberResponseDto.builder()
-                            .ok(bool)
-                            .message(message)
-                            .build()
-            );
-        }
 
-    }
 }

@@ -6,8 +6,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import spring.week7.Dto.Request.MemberRequestDto;
+import spring.week7.Errorhandler.BusinessException;
 
 import javax.persistence.*;
+
+import static spring.week7.Errorhandler.ErrorCode.LOGIN_INPUT_INVALID;
 
 @Builder
 @Getter
@@ -26,7 +30,17 @@ public class Member {
     @JsonIgnore
     private String password;
 
-    public boolean validatePassword(PasswordEncoder passwordEncoder, String password) {
-        return passwordEncoder.matches(password, this.password);
+
+
+    public Member(MemberRequestDto requestDto, PasswordEncoder passwordEncoder) {
+        this.email = requestDto.getEmail();
+        this.password =passwordEncoder.encode(requestDto.getPassword());
+    }
+
+    public void validatePassword(PasswordEncoder passwordEncoder, String password) {
+        if (!passwordEncoder.matches(password, this.password)) {
+            throw new BusinessException("로그인 실패",LOGIN_INPUT_INVALID);
+        }
+
     }
 }

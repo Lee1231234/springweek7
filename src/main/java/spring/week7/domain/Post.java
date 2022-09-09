@@ -30,10 +30,22 @@ public class Post extends Timestamped{
     @Column(length = 500)
     private String image;
 
+    @ManyToOne
+    @JoinColumn(name = "Member_id", nullable = false)
+    private Member member;
+
     public void update(PostRequestDto postRequestDto) {
         this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
         this.category = postRequestDto.getCategory();
         this.image =  postRequestDto.getImage();
+    }
+
+    public Post(PostRequestDto postRequestDto, Member member) {
+        this.title = postRequestDto.getTitle();
+        this.content = postRequestDto.getContent();
+        this.category = postRequestDto.getCategory();
+        this.image = postRequestDto.getImage();
+        this.member = member;
     }
 }

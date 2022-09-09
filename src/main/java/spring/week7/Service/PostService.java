@@ -3,13 +3,16 @@ package spring.week7.Service;
 
 import lombok.RequiredArgsConstructor;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import spring.week7.Dto.Request.PostRequestDto;
 import spring.week7.Dto.Response.PostResponseDto;
 import spring.week7.Repository.PostRepository;
+import spring.week7.Util.S3Uploader;
 import spring.week7.domain.Member;
 import spring.week7.domain.Post;
 
@@ -24,7 +27,7 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
-
+    private final S3Uploader s3Uploader;
     // 게시물 상세내용 가져오기
     public Post findPostByID(Long id) {
 
@@ -35,22 +38,32 @@ public class PostService {
 
     // 게시물 생성
     @Transactional
-    public Post postCreate(PostRequestDto postRequestDto, Member member) {
-        Post post = new Post(postRequestDto, member);
+    public Post postCreate(PostRequestDto postRequestDto, MultipartFile image, Member member) throws IOException {
 
+        String postImage = s3Uploader.upload(image, "static");
+        Post post = new Post(postRequestDto,postImage, member);
         return postRepository.save(post);
     }
 
     // 게시물 내용 수정
     @Transactional
-    public Post postEdit(Long id, PostRequestDto postRequestDto, Member member) {
+    public Post postEdit(Long id, PostRequestDto postRequestDto,MultipartFile image, Member member) throws IOException {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new NullPointerException("해당 id 게시물이 없습니다")
         );
         if (!post.getMember().getId().equals(member.getId())) {
             throw new IllegalArgumentException("수정 권한이 없습니다.");
         }
-        post.update(postRequestDto);
+        String imageUrl = post.getImage();
+        //이미지 존재시 먼저 삭제후 다시 업로드.
+        if(imageUrl!= null) {
+            String deleteUrl = imageUrl.substring(imageUrl.indexOf("static"));
+            s3Uploader.deleteImage(deleteUrl);
+            imageUrl = s3Uploader.upload(image,"static");
+
+        }
+        post.update(postRequestDto, imageUrl);
+
         return post;
     }
 

@@ -34,18 +34,18 @@ public class Post extends Timestamped{
     @JoinColumn(name = "Member_id", nullable = false)
     private Member member;
 
-    public void update(PostRequestDto postRequestDto) {
+    public void update(PostRequestDto postRequestDto,String image) {
         this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
         this.category = postRequestDto.getCategory();
-        this.image =  postRequestDto.getImage();
+        this.image = image;
     }
 
-    public Post(PostRequestDto postRequestDto, Member member) {
+    public Post(PostRequestDto postRequestDto,String image, Member member) {
         this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
         this.category = postRequestDto.getCategory();
-        this.image = postRequestDto.getImage();
+        this.image = image;
         this.member = member;
     }
 }

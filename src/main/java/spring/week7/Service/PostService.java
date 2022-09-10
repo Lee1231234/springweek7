@@ -28,12 +28,14 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final S3Uploader s3Uploader;
-    // 게시물 상세내용 가져오기
-    public Post findPostByID(Long id) {
 
-        return postRepository.findById(id).orElseThrow(
+    // 게시물 상세내용 가져오기
+    public PostResponseDto findPostByID(Long id) {
+        Post post = postRepository.findById(id).orElseThrow(
                 () -> new NullPointerException("해당 id 게시물이 없습니다")
         );
+
+        return new PostResponseDto(post);
     }
 
     // 게시물 생성
@@ -41,13 +43,13 @@ public class PostService {
     public Post postCreate(PostRequestDto postRequestDto, MultipartFile image, Member member) throws IOException {
 
         String postImage = s3Uploader.upload(image, "static");
-        Post post = new Post(postRequestDto,postImage, member);
+        Post post = new Post(postRequestDto, postImage, member);
         return postRepository.save(post);
     }
 
     // 게시물 내용 수정
     @Transactional
-    public Post postEdit(Long id, PostRequestDto postRequestDto,MultipartFile image, Member member) throws IOException {
+    public Post postEdit(Long id, PostRequestDto postRequestDto, MultipartFile image, Member member) throws IOException {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new NullPointerException("해당 id 게시물이 없습니다")
         );
@@ -56,10 +58,10 @@ public class PostService {
         }
         String imageUrl = post.getImage();
         //이미지 존재시 먼저 삭제후 다시 업로드.
-        if(imageUrl!= null) {
+        if (imageUrl != null) {
             String deleteUrl = imageUrl.substring(imageUrl.indexOf("static"));
             s3Uploader.deleteImage(deleteUrl);
-            imageUrl = s3Uploader.upload(image,"static");
+            imageUrl = s3Uploader.upload(image, "static");
 
         }
         post.update(postRequestDto, imageUrl);
@@ -76,7 +78,10 @@ public class PostService {
         if (!post.getMember().getId().equals(member.getId())) {
             throw new IllegalArgumentException("수정 권한이 없습니다.");
         }
-
+        String image = post.getImage();
+        String deleteUrl = image.substring(image.indexOf("static")); //이미지
+        //s3에서 이미지 삭제
+        s3Uploader.deleteImage(deleteUrl);
         postRepository.deleteById(id);
         return id;
     }

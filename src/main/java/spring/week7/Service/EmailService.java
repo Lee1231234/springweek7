@@ -14,7 +14,7 @@ public class EmailService {
 
     public void sendSimpleMessage(MailRequestDto mailDto) {
         SimpleMailMessage message = new SimpleMailMessage();
-        System.out.println(mailDto.getAddress()+" "+mailDto.getTitle()+" "+mailDto.getContent());
+        System.out.println(mailDto.getAddress() + " " + mailDto.getTitle() + " " + mailDto.getContent());
         message.setFrom("lee9710250@gmail.com");
         message.setTo(mailDto.getAddress());
         message.setSubject(mailDto.getTitle());

@@ -21,7 +21,17 @@ public enum ErrorCode {
     MEMBER_NOT_EXIST(400, "M001", "MEMBER_NOT_EXIST"),
 
     //JWT
-    JWT_NOT_PERMIT(400, "M001", "JWT is NOT PERMIT"),
+    JWT_NOT_PERMIT(400, "J001", "JWT is NOT PERMIT"),
+
+    //POST
+    POST_NOT_EXIST(400, "P001", "POST_NOT_EXIST"),
+
+
+    //COMMENT
+    COMMENT_NOT_EXIST(400, "C001", "COMMENT_NOT_EXIST"),
+    MEMBER_NOT_EQUALS(400, "C002", "MEMBER_NOT_EQUALS"),
+    //SUB COMMENT
+    SUBCOMMENT_NOT_EXIST(400, "C001", "SUBCOMMENT_NOT_EXIST"),
     ;
     private final String code;
     private final String message;

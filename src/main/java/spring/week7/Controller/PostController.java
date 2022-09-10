@@ -3,7 +3,7 @@ package spring.week7.Controller;
 
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,12 +20,12 @@ import java.util.List;
 @RestController
 public class PostController {
 
-    @Autowired
+
     private final PostService postService;
 
     // 게시물 상세내용 가져오기
     @GetMapping("api/post/{postId}")
-    public Post detailPost(@PathVariable(name = "postId") Long id) {
+    public PostResponseDto detailPost(@PathVariable(name = "postId") Long id) {
         return postService.findPostByID(id);
     }
 

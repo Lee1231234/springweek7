@@ -31,7 +31,7 @@ public class PostService {
 
     // 게시물 상세내용 가져오기
     public PostResponseDto findPostByID(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(
+       Post post = postRepository.findByJoinComment(id).orElseThrow(
                 () -> new NullPointerException("해당 id 게시물이 없습니다")
         );
 
@@ -71,7 +71,7 @@ public class PostService {
 
     // 게시물 삭제
     @Transactional
-    public Long postDelete(Long id, Member member) {
+    public void postDelete(Long id, Member member) {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new NullPointerException("해당 id 게시물이 없습니다")
         );
@@ -83,7 +83,7 @@ public class PostService {
         //s3에서 이미지 삭제
         s3Uploader.deleteImage(deleteUrl);
         postRepository.deleteById(id);
-        return id;
+
     }
 
 
@@ -138,4 +138,7 @@ public class PostService {
 
 
 
+    public Post postlike(PostRequestDto postRequestDto, Member member) {
+        return null;
+    }
 }//class

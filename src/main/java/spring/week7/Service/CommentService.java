@@ -25,7 +25,6 @@ public class CommentService {
                 () -> new BusinessException("포스트가 존재하지 않습니다.", POST_NOT_EXIST)
         );
         Comment comment = new Comment(commentRequestDto, member, post);
-        post.setComment(comment);
         commentRepository.save(comment);
     }
 

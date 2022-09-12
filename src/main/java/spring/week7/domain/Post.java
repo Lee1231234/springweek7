@@ -54,7 +54,7 @@ public class Post extends Timestamped {
     private Member member;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "Comment_id")
+    @JoinColumn(name = "Post_id")
     @JsonManagedReference
     private List<Comment> comments;
 

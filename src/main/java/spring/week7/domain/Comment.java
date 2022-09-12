@@ -30,7 +30,7 @@ public class Comment extends Timestamped {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonManagedReference
-    @JoinColumn(name = "SubComment_Id")
+    @JoinColumn(name = "Comment_Id")
     private List<SubComment> subComments;
     @Column(nullable = false)
     private String content;

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +41,12 @@ public class PostController {
         return postService.postCreate( postRequestDto,image, userDetails.getMember());
     }
 
+    //게시물 좋아요
+    @PostMapping("api/auth/post/like")
+    public Post likePost(PostRequestDto postRequestDto,
+                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return postService.postlike( postRequestDto, userDetails.getMember());
+    }
 
     // 게시물 수정
     @PutMapping("/api/auth/post/{postId}")
@@ -52,9 +59,10 @@ public class PostController {
 
     // 게시물 삭제
     @DeleteMapping("/api/auth/post/{postId}")
-    public Long deletePost(@PathVariable(name = "postId") Long id,
-                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return postService.postDelete(id, userDetails.getMember());
+    public ResponseEntity<String> deletePost(@PathVariable(name = "postId") Long id,
+                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        postService.postDelete(id, userDetails.getMember());
+        return ResponseEntity.ok("게시물 삭제 성공");
     }
 
 

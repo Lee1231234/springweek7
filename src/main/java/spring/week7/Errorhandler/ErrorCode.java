@@ -32,6 +32,8 @@ public enum ErrorCode {
     MEMBER_NOT_EQUALS(400, "C002", "MEMBER_NOT_EQUALS"),
     //SUB COMMENT
     SUBCOMMENT_NOT_EXIST(400, "C001", "SUBCOMMENT_NOT_EXIST"),
+    //MAIL
+    NUMBER_NOT_PERMIT(400, "M010", "NUMBER_NOT_PERMIT"),
     ;
     private final String code;
     private final String message;

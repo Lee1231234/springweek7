@@ -17,20 +17,18 @@ public class PostResponseDto {
     private Long id;
     private String title;
     private String content;
-    private String category;
+    private String postCategory;
     private String image;
     private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
     private Member member;
 
     public PostResponseDto(Post post) {
         this.id = post.getId();
         this.title = post.getTitle();
         this.content = post.getContent();
-        this.category = post.getImage();
+//        this.postCategory = String.valueOf(post.getPostCategory());
         this.image = post.getImage();
         this.createdAt = post.getCreatedAt();
-        this.modifiedAt = post.getModifiedAt();
         this.member = post.getMember();
     }
 }

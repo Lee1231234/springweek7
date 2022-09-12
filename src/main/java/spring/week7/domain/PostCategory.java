@@ -21,7 +21,7 @@ public class PostCategory {
     @Column(unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "postCategory")
     private List<Post> postList = new ArrayList<>();
 
     public void mappingPost(Post post) {

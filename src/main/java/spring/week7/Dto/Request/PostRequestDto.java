@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import spring.week7.domain.PostCategory;
 
 @Builder
 @Getter
@@ -12,6 +13,6 @@ import lombok.NoArgsConstructor;
 public class PostRequestDto {
     private String title;
     private String content;
-    private String category;
+    private PostCategory postCategory;
     private String image;
 }

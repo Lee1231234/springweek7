@@ -3,11 +3,20 @@ package spring.week7.Service;
 
 import lombok.RequiredArgsConstructor;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import spring.week7.Dto.Request.PostRequestDto;
 import spring.week7.Dto.Response.PostResponseDto;
@@ -23,6 +32,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -40,15 +50,14 @@ public class PostService {
 
     // 게시물 생성
     @Transactional
-    public Post postCreate(PostRequestDto postRequestDto, Member member) {
+    public Post postCreate(PostRequestDto postRequestDto, Member member)  {
 
         Post post = Post.builder()
                 .title(postRequestDto.getTitle())
                 .content(postRequestDto.getContent())
-                .category(postCategoryRepository.findByName(postRequestDto.getCategory()))
+                .postCategory(postCategoryRepository.findByName(postRequestDto.getPostCategory().getName()))
                 .member(member)
                 .build();
-
         return postRepository.save(post);
     }
 
@@ -110,5 +119,27 @@ public class PostService {
 
         return postCategoryRepository.save(postCategory);
     }
+
+
+    //게시글 전체조회
+    //카테고리 별 목록 조회 추가
+    public Page<Post> postAllList(Model model, Long postCategoryId, Pageable pageable) {
+        Page<Post> postPage;
+
+        if (postCategoryId > 0) {
+            postPage = postRepository.findByPostCategoryId(postCategoryId, pageable);
+            model.addAttribute("categoryId", postCategoryId);
+            return postPage;
+
+        } else {
+            postPage = postRepository.findAll(pageable);
+        }
+
+//        model.addAttribute("categoryId", postCategoryId);
+        model.addAttribute("postPage", postPage);
+
+        return postPage;
+    }
+
 
 }//class

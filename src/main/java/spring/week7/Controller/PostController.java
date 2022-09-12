@@ -4,11 +4,13 @@ package spring.week7.Controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import spring.week7.Dto.Request.PostRequestDto;
 import spring.week7.Dto.Response.PostResponseDto;
-import spring.week7.Repository.PostCategoryRepository;
 import spring.week7.Service.PostService;
 import spring.week7.domain.Post;
 import spring.week7.domain.PostCategory;
@@ -22,8 +24,6 @@ public class PostController {
 
     @Autowired
     private final PostService postService;
-    @Autowired
-    private PostCategoryRepository postCategoryRepository;
 
     // 게시물 상세내용 가져오기
     @GetMapping("api/post/{postId}")
@@ -67,5 +67,16 @@ public class PostController {
             @RequestParam(value = "categoryName") String categoryName) {
         return postService.categoryAdd(categoryName);
     }
-}
+
+    //게시물 전체조회
+    @GetMapping("/api/post")
+    public Page<Post> listAllPost(Model model,
+                                  @RequestParam(value = "category", required = false, defaultValue = "0") Long postCategoryId,
+                                  Pageable pageable) {
+
+        return postService.postAllList(model, postCategoryId, pageable);
+    }
+
+}//class
+
 

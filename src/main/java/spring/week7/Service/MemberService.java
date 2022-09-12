@@ -31,15 +31,15 @@ public class MemberService {
 
     public void createMember(MemberRequestDto requestDto) {
         //만들때는 bool값을 true로
-        isPresentMember(requestDto.getEmail(),true);
-        Member member = new Member(requestDto,passwordEncoder);
+        isPresentMember(requestDto.getEmail(), true);
+        Member member = new Member(requestDto, passwordEncoder);
         memberRepository.save(member);
 
     }
 
     public ResponseEntity<?> login(LoginRequestDto requestDto, HttpServletResponse response) {
         //체크할때는 bool를 false로
-        Member member = isPresentMember(requestDto.getEmail(),false);
+        Member member = isPresentMember(requestDto.getEmail(), false);
         member.validatePassword(passwordEncoder, requestDto.getPassword());
         TokenDto tokenDto = tokenProvider.generateTokenDto(member);
         tokenToHeaders(tokenDto, response);
@@ -47,23 +47,23 @@ public class MemberService {
     }
 
     public ResponseEntity<?> logout(HttpServletRequest request) {
-       if(!tokenProvider.validateToken(request.getHeader("Refresh-Token"))){
-           throw new BusinessException("잘못된 JWT 토큰입니다",JWT_NOT_PERMIT);
-       }
+        if (!tokenProvider.validateToken(request.getHeader("Refresh-Token"))) {
+            throw new BusinessException("잘못된 JWT 토큰입니다", JWT_NOT_PERMIT);
+        }
         Member member = tokenProvider.getMemberFromAuthentication();
 
         return tokenProvider.deleteRefreshToken(member);
     }
 
     @Transactional(readOnly = true)
-    public Member isPresentMember(String email,boolean bool) {
+    public Member isPresentMember(String email, boolean bool) {
         Optional<Member> optionalMember = memberRepository.findByEmail(email);
-        if(!bool){
+        if (!bool) {
             return optionalMember.orElseThrow(
-                    () -> new BusinessException("로그인 실패.",EMAIL_DUPLICATION)
+                    () -> new BusinessException("로그인 실패.", EMAIL_DUPLICATION)
 
             );
-        }else{
+        } else {
             return optionalMember.orElse(null);
         }
 

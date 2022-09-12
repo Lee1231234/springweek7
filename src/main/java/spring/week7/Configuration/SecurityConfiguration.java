@@ -63,7 +63,8 @@ public class SecurityConfiguration {
 
                 .and()
                 .authorizeRequests()
-                .antMatchers("/**").permitAll()
+                .antMatchers("/api/post/**").permitAll()
+                .antMatchers("/api/member/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
 
                 .anyRequest().authenticated()

@@ -26,6 +26,8 @@ import java.security.Key;
 import java.util.Date;
 import java.util.Optional;
 
+import static spring.week7.Errorhandler.ErrorCode.JWT_NOT_PERMIT;
+
 
 @Slf4j
 @Component
@@ -116,12 +118,12 @@ public class TokenProvider {
     public ResponseEntity<?> deleteRefreshToken(Member member) {
         RefreshToken refreshToken = isPresentRefreshToken(member);
         if (null == refreshToken) {
-            return new ResponseEntity<>("TOKEN_NOT_FOUND", HttpStatus.NOT_FOUND);
-            // ResponseDto.fail("TOKEN_NOT_FOUND", "존재하지 않는 Token 입니다.");
+            throw new BusinessException("TOKEN_NOT_FOUND", JWT_NOT_PERMIT);
+
         }
 
         refreshTokenRepository.delete(refreshToken);
         return new ResponseEntity<>("success", HttpStatus.OK);
-        //ResponseDto.success("success");
+
     }
 }

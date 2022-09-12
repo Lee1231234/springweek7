@@ -2,6 +2,7 @@ package spring.week7.Controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +32,7 @@ public class MemberController {
         return memberService.login(requestDto, response);
     }
 
-    @PostMapping(value ="/api/auth/member/logout")
+    @GetMapping(value ="/api/auth/member/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
         return memberService.logout(request);
     }

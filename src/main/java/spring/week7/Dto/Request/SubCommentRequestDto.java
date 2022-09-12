@@ -9,9 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostRequestDto {
-    private String title;
+public class SubCommentRequestDto {
+    private Long commentId;
     private String content;
-    private String category;
-
 }

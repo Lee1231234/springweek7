@@ -31,15 +31,14 @@ public class Member {
     private String password;
 
 
-
     public Member(MemberRequestDto requestDto, PasswordEncoder passwordEncoder) {
         this.email = requestDto.getEmail();
-        this.password =passwordEncoder.encode(requestDto.getPassword());
+        this.password = passwordEncoder.encode(requestDto.getPassword());
     }
 
     public void validatePassword(PasswordEncoder passwordEncoder, String password) {
         if (!passwordEncoder.matches(password, this.password)) {
-            throw new BusinessException("로그인 실패",LOGIN_INPUT_INVALID);
+            throw new BusinessException("로그인 실패", LOGIN_INPUT_INVALID);
         }
 
     }

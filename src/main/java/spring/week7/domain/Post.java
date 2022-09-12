@@ -1,5 +1,7 @@
 package spring.week7.domain;
 
+import com.amazonaws.services.ec2.model.EventType;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +10,7 @@ import lombok.NoArgsConstructor;
 import spring.week7.Dto.Request.PostRequestDto;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @Builder
@@ -28,6 +31,20 @@ public class Post extends Timestamped {
 
     @Column(nullable = false)
     private String category;
+    @Getter
+    public enum Category {
+        ANIMAL("동물"), PLANT("식물"), CITY("도시"), SPACE("우주"), TRAVEL("여행"), FOOD("음식");
+        public final String category;
+        Category(String category) {
+            this.category = category;
+        }
+
+        @JsonCreator
+        public static EventType from(String s) {
+            return EventType.valueOf(s.toUpperCase());
+        }
+    }
+
 
     @Column(length = 500)
     private String image;

@@ -4,10 +4,12 @@ package spring.week7.Service;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.*;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 import spring.week7.Dto.Request.PostRequestDto;
 import spring.week7.Dto.Response.PostResponseDto;
@@ -18,8 +20,6 @@ import spring.week7.domain.Post;
 
 import javax.transaction.Transactional;
 
-import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -108,6 +108,34 @@ public class PostService {
 
         return result;
     }
+
+    //카테고리별 목록조회
+    public Page<Post> postAllList(Model model, String category, Pageable pageable) {
+        Page<Post> postPage;
+        if (!(category == null)){
+        Post.Category type = Post.Category.valueOf(category);
+        //이미 저장된 게시물중 해당 카테고리인 게시물을 모두 불러오기
+        switch (type) {
+            case ANIMAL:
+            case PLANT:
+            case CITY:
+            case SPACE:
+            case TRAVEL:
+            case FOOD:
+                postPage = postRepository.findByCategory(category, pageable);
+                model.addAttribute("category", category);
+                return postPage;
+            default:
+                System.out.println("해당 카테고리가 없습니다.");
+                break;
+        }
+        }
+        postPage = postRepository.findAll(pageable);
+        model.addAttribute("postPage", postPage);
+
+        return postPage;
+    }
+
 
 
 }//class

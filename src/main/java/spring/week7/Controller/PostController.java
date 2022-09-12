@@ -4,7 +4,10 @@ package spring.week7.Controller;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import spring.week7.Dto.Request.PostRequestDto;
@@ -59,6 +62,15 @@ public class PostController {
     @GetMapping("/api/post/search")
     public List<PostResponseDto> searchPost(@RequestParam("query") String keyword) {
         return postService.postSearch(keyword);
+    }
+
+    //게시물 전체조회
+    @GetMapping("/api/post")
+    public Page<Post> listAllPost(Model model,
+                                    @RequestParam(value = "category", required = false) String category,
+                                  Pageable pageable) {
+
+        return postService.postAllList(model,category, pageable);
     }
 }
 

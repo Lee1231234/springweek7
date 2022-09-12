@@ -31,7 +31,6 @@ public class SubCommentService {
         SubComment subComment = new SubComment(subCommentRequestDto, member, comment);
         List<SubComment> subComments = comment.getSubComments();
         subComments.add(subComment);
-        comment.setSubComments(subComments);
         subCommentRepository.save(subComment);
     }
 

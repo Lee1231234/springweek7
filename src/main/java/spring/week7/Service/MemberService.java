@@ -5,29 +5,35 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import spring.week7.Dto.Request.LoginRequestDto;
+import spring.week7.Dto.Request.MemberImageRequestDto;
 import spring.week7.Dto.Request.MemberRequestDto;
 import spring.week7.Dto.Response.MemberResponseDto;
 import spring.week7.Dto.TokenDto;
 import spring.week7.Errorhandler.BusinessException;
 import spring.week7.Jwt.TokenProvider;
+import spring.week7.Repository.FollowRepository;
 import spring.week7.Repository.MemberRepository;
+import spring.week7.Util.S3Uploader;
+import spring.week7.domain.Follow;
 import spring.week7.domain.Member;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Optional;
 
-import static spring.week7.Errorhandler.ErrorCode.EMAIL_DUPLICATION;
-import static spring.week7.Errorhandler.ErrorCode.JWT_NOT_PERMIT;
+import static spring.week7.Errorhandler.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
-
+    private final S3Uploader s3Uploader;
     private final MemberRepository memberRepository;
+    private final FollowRepository followRepository;
 
     public void createMember(MemberRequestDto requestDto) {
         //만들때는 bool값을 true로
@@ -37,7 +43,7 @@ public class MemberService {
 
     }
 
-    public ResponseEntity<?> login(LoginRequestDto requestDto, HttpServletResponse response) {
+    public ResponseEntity<MemberResponseDto> login(LoginRequestDto requestDto, HttpServletResponse response) {
         //체크할때는 bool를 false로
         Member member = isPresentMember(requestDto.getEmail(), false);
         member.validatePassword(passwordEncoder, requestDto.getPassword());
@@ -74,5 +80,43 @@ public class MemberService {
         response.addHeader("Refresh-Token", tokenDto.getRefreshToken());
         response.addHeader("Access-Token-Expire-Time", tokenDto.getAccessTokenExpiresIn().toString());
     }
+    @Transactional
+    public ResponseEntity<?> mypage(String memberid, Member userDetails) {
+        return null ;
+    }
 
+
+
+    @Transactional
+    public void myImageUpload(MemberImageRequestDto memberImageRequestDto, MultipartFile image, Member member) throws IOException {
+
+        if (!memberImageRequestDto.getMember().equals(member.getEmail())) {
+            throw new IllegalArgumentException("수정 권한이 없습니다.");
+        }
+        String imageUrl = member.getImage();
+        //이미지 존재시 먼저 삭제후 다시 업로드.
+        if (imageUrl != null) {
+            String deleteUrl = imageUrl.substring(imageUrl.indexOf("MemberImage"));
+            s3Uploader.deleteImage(deleteUrl);
+            imageUrl = s3Uploader.upload(image, "MemberImage");
+
+        }
+
+        member.update(imageUrl);
+    }
+    //팔로우 설정 해제.
+
+    public void myfollow(String email, Member member) {
+        if (email.equals(member.getEmail())) {
+            throw new BusinessException("자신을 팔로우 할수 없습니다.",EMAIL_DUPLICATION);
+        }
+        Optional<Follow> follow1=followRepository.findByfollower(email);
+        if(follow1.isEmpty()){
+            Follow follow =new Follow(email,member.getEmail());
+            followRepository.save(follow);
+        }else{
+            followRepository.deleteById(follow1.get().getId());
+        }
+
+    }
 }

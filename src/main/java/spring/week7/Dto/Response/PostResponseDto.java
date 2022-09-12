@@ -34,7 +34,7 @@ public class PostResponseDto {
         this.id = post.getId();
         this.title = post.getTitle();
         this.content = post.getContent();
-        this.category = post.getImage();
+        this.category = post.getCategory();
         this.image = post.getImage();
         this.createdAt = post.getCreatedAt();
         this.comment = post.getComments();

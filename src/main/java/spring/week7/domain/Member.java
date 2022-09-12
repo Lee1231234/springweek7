@@ -1,20 +1,20 @@
 package spring.week7.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import spring.week7.Dto.Request.MemberRequestDto;
 import spring.week7.Errorhandler.BusinessException;
 
 import javax.persistence.*;
 
+
 import static spring.week7.Errorhandler.ErrorCode.LOGIN_INPUT_INVALID;
 
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -31,6 +31,22 @@ public class Member {
     private String password;
 
 
+    //사진을 위한 자리
+    @Column
+    private String image;
+    //랜덤한 값을 위한 자리
+    @JsonIgnore
+    private int validNumber;
+
+    @JsonIgnore
+    private int age;
+//    @JoinColumn(name = "follower_id")
+//    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Followr> follower;
+//
+//    @JoinColumn(name = "followed_id")
+//    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Followr> followed;
     public Member(MemberRequestDto requestDto, PasswordEncoder passwordEncoder) {
         this.email = requestDto.getEmail();
         this.password = passwordEncoder.encode(requestDto.getPassword());
@@ -41,5 +57,9 @@ public class Member {
             throw new BusinessException("로그인 실패", LOGIN_INPUT_INVALID);
         }
 
+    }
+
+    public void update(String imageUrl) {
+        this.image = imageUrl;
     }
 }

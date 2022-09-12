@@ -12,7 +12,7 @@ import spring.week7.Service.CommentService;
 
 import spring.week7.domain.UserDetailsImpl;
 
-
+import javax.servlet.http.HttpServletResponse;
 
 
 @RequiredArgsConstructor
@@ -31,7 +31,8 @@ public class CommentController {
     //코맨트 삭제
     @DeleteMapping("api/auth/post/comment/{commentId}")
     public ResponseEntity<String> deleteComment(@PathVariable Long commentId,
-                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
+                                                @AuthenticationPrincipal UserDetailsImpl userDetails)
+    {
         commentService.CommentDelete(commentId, userDetails.getMember());
 
         return ResponseEntity.ok("코맨트 삭제 성공");

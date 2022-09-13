@@ -13,9 +13,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 import spring.week7.Dto.Request.PostRequestDto;
 import spring.week7.Dto.Response.PostResponseDto;
+import spring.week7.Errorhandler.BusinessException;
+import spring.week7.Errorhandler.ErrorCode;
+import spring.week7.Repository.MemberPostRestoreRepository;
 import spring.week7.Repository.PostRepository;
 import spring.week7.Util.S3Uploader;
 import spring.week7.domain.Member;
+import spring.week7.domain.MemberPostRestore;
 import spring.week7.domain.Post;
 
 import javax.transaction.Transactional;
@@ -29,6 +33,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final S3Uploader s3Uploader;
 
+    public final MemberPostRestoreRepository memberPostRestoreRepository;
     // 게시물 상세내용 가져오기
     public PostResponseDto findPostByID(Long id) {
        Post post = postRepository.findByJoinComment(id).orElseThrow(
@@ -140,5 +145,19 @@ public class PostService {
 
     public Post postlike(PostRequestDto postRequestDto, Member member) {
         return null;
+    }
+    @Transactional
+    public void postStore(Long postId, Member member) {
+        Optional<Post> post=postRepository.findById(postId);
+        post.orElseThrow(()->new BusinessException("포스트가 존재하지않음", ErrorCode.POST_NOT_EXIST));
+        Optional<MemberPostRestore> memberPostRestore =memberPostRestoreRepository.findByPostAndMember(post.get(),member);
+        if(memberPostRestore.isPresent()){
+            memberPostRestoreRepository.deleteById(memberPostRestore.get().getId());
+        }else{
+            memberPostRestoreRepository.save(new MemberPostRestore(post.get(),member));
+        }
+
+
+
     }
 }//class

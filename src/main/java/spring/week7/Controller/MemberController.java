@@ -61,7 +61,7 @@ public class MemberController {
     }
 
     @PostMapping(value = "/api/auth/member/mypage/follow")
-    public ResponseEntity<?> myfollow(@RequestBody String email,
+    public ResponseEntity<?> myfollow(@RequestParam(value = "email") String email,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         memberService.myfollow(email,userDetails.getMember());
         return ResponseEntity.ok("팔로우 성공");

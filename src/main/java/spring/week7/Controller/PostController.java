@@ -80,5 +80,13 @@ public class PostController {
 
         return postService.postAllList(model,category, pageable);
     }
+
+    //게시물 저장
+    @GetMapping("api/auth/post/restore/{postId}")
+    public ResponseEntity<String> restorePost(@PathVariable Long postId,
+                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        postService.postStore(postId, userDetails.getMember());
+        return ResponseEntity.ok("성공적으로 저장됨");
+    }
 }
 

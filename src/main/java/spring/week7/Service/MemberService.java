@@ -80,6 +80,8 @@ public class MemberService {
         response.addHeader("Refresh-Token", tokenDto.getRefreshToken());
         response.addHeader("Access-Token-Expire-Time", tokenDto.getAccessTokenExpiresIn().toString());
     }
+
+    //자신이 생성한 글 + 저장한 글
     @Transactional
     public ResponseEntity<?> mypage(String memberid, Member userDetails) {
         return null ;
@@ -110,6 +112,9 @@ public class MemberService {
         if (email.equals(member.getEmail())) {
             throw new BusinessException("자신을 팔로우 할수 없습니다.",EMAIL_DUPLICATION);
         }
+        Optional<Member> member1 =memberRepository.findByEmail(email);
+        member1.orElseThrow(()->new BusinessException("존재하지않는 이메일입니다",EMAIL_NOT_EXIST));
+
         Optional<Follow> follow1=followRepository.findByfollower(email);
         if(follow1.isEmpty()){
             Follow follow =new Follow(email,member.getEmail());

@@ -80,5 +80,13 @@ public class PostController {
 
         return postService.postAllList(model,category, pageable);
     }
+
+    //게시물을 보드에 추가
+    @PostMapping("/api/auth/post/board/{id}")
+    public Post addPost(@PathVariable Long id,
+                      @RequestParam("boardId") Long boardId,
+                      @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return postService.postAdd(id, boardId, userDetails.getMember());
+    }
 }
 

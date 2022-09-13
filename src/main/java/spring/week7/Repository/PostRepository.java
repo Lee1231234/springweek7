@@ -26,4 +26,6 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     Optional<Post> findByJoinComment(@Param("PostId") Long PostId);
 /*"(SELECT c From Comment c LEFT JOIN FEAT SubComment s ON c.id = s.comment.id) as c " +*/
 
+    Long countAllByBoardId(Long id);
+    List<Post> findTop5ByBoardId(Long id);
 }

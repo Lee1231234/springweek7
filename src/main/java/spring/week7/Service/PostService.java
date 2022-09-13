@@ -13,8 +13,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 import spring.week7.Dto.Request.PostRequestDto;
 import spring.week7.Dto.Response.PostResponseDto;
+import spring.week7.Errorhandler.ApiRequestException;
+import spring.week7.Repository.BoardRepository;
 import spring.week7.Repository.PostRepository;
 import spring.week7.Util.S3Uploader;
+import spring.week7.domain.Board;
 import spring.week7.domain.Member;
 import spring.week7.domain.Post;
 
@@ -28,6 +31,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final S3Uploader s3Uploader;
+    private final BoardRepository boardRepository;
 
     // 게시물 상세내용 가져오기
     public PostResponseDto findPostByID(Long id) {
@@ -140,5 +144,28 @@ public class PostService {
 
     public Post postlike(PostRequestDto postRequestDto, Member member) {
         return null;
+    }
+
+
+    //게시물을 보드에 추가
+    @Transactional
+    public Post postAdd(Long id, Long boardId, Member member) {
+        Post post = postRepository.findById(id).orElseThrow(
+                ()-> new ApiRequestException("해당 게시물이 존재하지 않습니다.")
+        );
+
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                ()-> new ApiRequestException("해당 보드가 존재하지 않습니다.")
+        );
+
+        Long memberId = member.getId();
+        Long boardMemberId = board.getMember().getId();
+
+        if(!memberId.equals(boardMemberId)){
+            throw new ApiRequestException("해당 회원의 보드가 아닙니다.");
+        }
+
+        post.addBoard(board);
+        return post;
     }
 }//class

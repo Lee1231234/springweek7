@@ -3,10 +3,7 @@ package spring.week7.domain;
 import com.amazonaws.services.ec2.model.EventType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import spring.week7.Dto.Request.PostRequestDto;
 
 import javax.persistence.*;
@@ -58,6 +55,12 @@ public class Post extends Timestamped {
     @JsonManagedReference
     private List<Comment> comments;
 
+    @Setter
+    @ManyToMany
+    @Column(nullable = false)
+    private List<Board> board;
+
+
     public void update(PostRequestDto postRequestDto, String image) {
         this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
@@ -76,5 +79,9 @@ public class Post extends Timestamped {
     public void setComment(Comment comment) {
         this.comments.add(comment);
         comment.setPost(this);
+    }
+
+    public void addBoard(Board board){
+        this.board.add(board);
     }
 }

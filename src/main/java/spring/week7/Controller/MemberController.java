@@ -30,7 +30,7 @@ public class MemberController {
     @PostMapping(value = "/api/member/signup")
     public ResponseEntity<MemberResponseDto> signup(@RequestBody @Valid MemberRequestDto requestDto) {
         memberService.createMember(requestDto);
-        return ResponseEntity.ok(new MemberResponseDto(true, "로그인 성공"));
+        return ResponseEntity.ok(new MemberResponseDto(true, "회원가입  성공"));
     }
 
     //로그인
@@ -46,9 +46,9 @@ public class MemberController {
     }
 
     //마이페이지
-    @GetMapping(value = "/api/auth/member/mypage/{memberid}")
-    public ResponseEntity<?> mypage(@PathVariable String memberid, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return memberService.mypage(memberid, userDetails.getMember());
+    @GetMapping(value = "/api/auth/member/mypage/{email:.+}")
+    public ResponseEntity<?> mypage(@PathVariable String email, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return memberService.mypage(email, userDetails.getMember());
     }
 
     //멤버 이미지 업로드

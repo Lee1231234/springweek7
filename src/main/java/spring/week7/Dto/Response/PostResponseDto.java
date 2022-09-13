@@ -2,12 +2,10 @@ package spring.week7.Dto.Response;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import spring.week7.domain.Comment;
 import spring.week7.domain.Member;
@@ -15,6 +13,7 @@ import spring.week7.domain.Post;
 
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostResponseDto {
@@ -41,4 +40,5 @@ public class PostResponseDto {
         this.modifiedAt = post.getModifiedAt();
         this.member = post.getMember();
     }
+
 }

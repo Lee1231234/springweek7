@@ -10,18 +10,24 @@ import spring.week7.Dto.Request.LoginRequestDto;
 import spring.week7.Dto.Request.MemberImageRequestDto;
 import spring.week7.Dto.Request.MemberRequestDto;
 import spring.week7.Dto.Response.MemberResponseDto;
+import spring.week7.Dto.Response.MyPageResponseDto;
 import spring.week7.Dto.TokenDto;
 import spring.week7.Errorhandler.BusinessException;
 import spring.week7.Jwt.TokenProvider;
 import spring.week7.Repository.FollowRepository;
+import spring.week7.Repository.MemberPostRestoreRepository;
 import spring.week7.Repository.MemberRepository;
+import spring.week7.Repository.PostRepository;
 import spring.week7.Util.S3Uploader;
 import spring.week7.domain.Follow;
 import spring.week7.domain.Member;
+import spring.week7.domain.MemberPostRestore;
+import spring.week7.domain.Post;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import static spring.week7.Errorhandler.ErrorCode.*;
@@ -34,10 +40,13 @@ public class MemberService {
     private final S3Uploader s3Uploader;
     private final MemberRepository memberRepository;
     private final FollowRepository followRepository;
-
+    private final PostRepository postRepository;
+    private final MemberPostRestoreRepository memberPostRestoreRepository;
     public void createMember(MemberRequestDto requestDto) {
         //만들때는 bool값을 true로
-        isPresentMember(requestDto.getEmail(), true);
+        if(isPresentMember(requestDto.getEmail(), true)!=null){
+            throw  new BusinessException("회원가입 실패",EMAIL_INPUT_INVALID);
+        }
         Member member = new Member(requestDto, passwordEncoder);
         memberRepository.save(member);
 
@@ -66,7 +75,7 @@ public class MemberService {
         Optional<Member> optionalMember = memberRepository.findByEmail(email);
         if (!bool) {
             return optionalMember.orElseThrow(
-                    () -> new BusinessException("로그인 실패.", EMAIL_DUPLICATION)
+                    () -> new BusinessException("로그인 실패.", LOGIN_INPUT_INVALID)
 
             );
         } else {
@@ -80,9 +89,33 @@ public class MemberService {
         response.addHeader("Refresh-Token", tokenDto.getRefreshToken());
         response.addHeader("Access-Token-Expire-Time", tokenDto.getAccessTokenExpiresIn().toString());
     }
+
+    //자신이 생성한 글 + 저장한 글 + 팔로워 수 모두를 Dto로 출력
     @Transactional
     public ResponseEntity<?> mypage(String memberid, Member userDetails) {
-        return null ;
+        Optional<Member> member =memberRepository.findByEmail(memberid);
+        Optional<List<Post>> post;
+        Optional<List<MemberPostRestore>> memberPostRestores;
+        int follower = followRepository.countAllByFollower(memberid);
+        int following = followRepository.countAllByFollowing(memberid);
+        if(member.isPresent()) {
+            post = postRepository.findAllByMember(member.get());
+            memberPostRestores = memberPostRestoreRepository.findAllByMember(member.get());
+        }else{
+            throw new BusinessException("멤버가 존재하지 않습니다.",MEMBER_NOT_EXIST);
+        }
+        MyPageResponseDto myPageResponseDto=null;
+
+        if(memberPostRestores.isPresent()&&post.isPresent()){
+            myPageResponseDto = new MyPageResponseDto(post.get(),memberPostRestores.get(),follower,following);
+        }else if(memberPostRestores.isPresent()){
+            myPageResponseDto = new MyPageResponseDto(null,memberPostRestores.get(),follower,following);
+        }else if(post.isPresent()){
+            myPageResponseDto = new MyPageResponseDto(post.get(),null,follower,following);
+        }
+
+
+        return ResponseEntity.ok(myPageResponseDto) ;
     }
 
 
@@ -110,6 +143,8 @@ public class MemberService {
         if (email.equals(member.getEmail())) {
             throw new BusinessException("자신을 팔로우 할수 없습니다.",EMAIL_DUPLICATION);
         }
+        Optional<Member> member1 =memberRepository.findByEmail(email);
+        member1.orElseThrow(()->new BusinessException("존재하지않는 이메일입니다",EMAIL_NOT_EXIST));
         Optional<Follow> follow1=followRepository.findByfollower(email);
         if(follow1.isEmpty()){
             Follow follow =new Follow(email,member.getEmail());

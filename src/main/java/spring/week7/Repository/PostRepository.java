@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import spring.week7.domain.Member;
 import spring.week7.domain.Post;
 
 import java.util.List;
@@ -24,6 +25,11 @@ public interface PostRepository extends JpaRepository<Post,Long> {
  //          " ON p.id = c.post.id" +
             " WHERE  p.id = :PostId")
     Optional<Post> findByJoinComment(@Param("PostId") Long PostId);
-/*"(SELECT c From Comment c LEFT JOIN FEAT SubComment s ON c.id = s.comment.id) as c " +*/
+
+
+
+
+    Optional<List<Post>> findAllByMember(Member member);
+    /*"(SELECT c From Comment c LEFT JOIN FEAT SubComment s ON c.id = s.comment.id) as c " +*/
 
 }

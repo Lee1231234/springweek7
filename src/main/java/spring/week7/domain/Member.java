@@ -10,6 +10,9 @@ import spring.week7.Errorhandler.BusinessException;
 import javax.persistence.*;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static spring.week7.Errorhandler.ErrorCode.LOGIN_INPUT_INVALID;
 
 @Builder
@@ -30,8 +33,13 @@ public class Member {
     @JsonIgnore
     private String password;
 
+//    포스트 저장용
 
-    //사진을 위한 자리
+   @OneToMany(mappedBy = "member")
+   @JsonIgnore
+   private List<MemberPostRestore> member_post_restores = new ArrayList<>();
+
+//    사진을 위한 자리
     @Column
     private String image;
     //랜덤한 값을 위한 자리

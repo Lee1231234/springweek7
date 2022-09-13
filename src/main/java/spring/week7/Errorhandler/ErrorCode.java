@@ -17,6 +17,7 @@ public enum ErrorCode {
     // Member
     EMAIL_DUPLICATION(400, "M001", "Email is Duplication"),
     LOGIN_INPUT_INVALID(400, "M002", "Login input is invalid"),
+    EMAIL_INPUT_INVALID(400, "M002", "Sign input is invalid"),
 
     MEMBER_NOT_EXIST(400, "M001", "MEMBER_NOT_EXIST"),
 
@@ -34,6 +35,7 @@ public enum ErrorCode {
     SUBCOMMENT_NOT_EXIST(400, "C001", "SUBCOMMENT_NOT_EXIST"),
     //MAIL
     NUMBER_NOT_PERMIT(400, "M010", "NUMBER_NOT_PERMIT"),
+    EMAIL_NOT_EXIST(400, "M011", "EMAIL_NOT_EXIST"),
     ;
     private final String code;
     private final String message;

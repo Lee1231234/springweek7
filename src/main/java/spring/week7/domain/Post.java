@@ -2,19 +2,18 @@ package spring.week7.domain;
 
 import com.amazonaws.services.ec2.model.EventType;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import spring.week7.Dto.Request.PostRequestDto;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -57,6 +56,11 @@ public class Post extends Timestamped {
     @JoinColumn(name = "Post_id")
     @JsonManagedReference
     private List<Comment> comments;
+
+
+    @OneToMany(mappedBy = "post")
+    @JsonIgnore
+    private List<MemberPostRestore> member_post_restores = new ArrayList<>();
 
     public void update(PostRequestDto postRequestDto, String image) {
         this.title = postRequestDto.getTitle();

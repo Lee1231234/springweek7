@@ -23,14 +23,14 @@ public class MailController {
         return "SendMail.html";
     }
 
-    @PostMapping("/api/auth/mail/send")
+    @PostMapping("/api/mail/send")
     public String sendMail(@RequestBody MailRequestDto mailDto,
                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         emailService.sendPasswordMessage(mailDto,userDetails.getMember());
         System.out.println("메일 전송 완료");
         return "AfterMail.html";
     }
-    @PostMapping("/api/auth/mail/confirm/{validNum}")
+    @PostMapping("/api/mail/confirm/{validNum}")
     public String confirmMail(@PathVariable int validNum,
                               @RequestBody LoginRequestDto loginRequestDto,
                               @AuthenticationPrincipal UserDetailsImpl userDetails) {

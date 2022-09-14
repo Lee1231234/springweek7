@@ -6,6 +6,8 @@ import lombok.*;
 import spring.week7.Dto.Request.CommentRequestDto;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -22,6 +24,10 @@ public class Comment extends Timestamped {
 
     @Column(nullable = false)
     private String author;
+
+    @Column
+    @Min(0)
+    private int likeNum;
 
     @JoinColumn(name = "post_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,4 +52,14 @@ public class Comment extends Timestamped {
     public void update(CommentRequestDto commentRequestDto) {
         this.content = commentRequestDto.getContent();
     }
+
+    public void addLike() {
+        this.likeNum += 1;
+    }
+
+    public void deleteLike() {
+        this.likeNum -= 1;
+    }
+
 }
+

@@ -8,6 +8,7 @@ import lombok.*;
 import spring.week7.Dto.Request.PostRequestDto;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +49,10 @@ public class Post extends Timestamped {
     @Column(length = 500)
     private String image;
 
+    @Column
+    @Min(0)
+    private int likeNum;
+
     @ManyToOne
     @JoinColumn(name = "Member_id", nullable = false)
     private Member member;
@@ -81,4 +86,12 @@ public class Post extends Timestamped {
         this.comments.add(comment);
         comment.setPost(this);
     }
+
+    public void addLike() {
+        this.likeNum += 1;
+    }
+    public void deleteLike() {
+        this.likeNum -= 1;
+    }
+
 }

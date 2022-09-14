@@ -26,9 +26,6 @@ public interface PostRepository extends JpaRepository<Post,Long> {
             " WHERE  p.id = :PostId")
     Optional<Post> findByJoinComment(@Param("PostId") Long PostId);
 
-
-
-
     Optional<List<Post>> findAllByMember(Member member);
     /*"(SELECT c From Comment c LEFT JOIN FEAT SubComment s ON c.id = s.comment.id) as c " +*/
 

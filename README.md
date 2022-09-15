@@ -39,3 +39,4 @@ BusinessException 클래스의 내용과 ErrorResponse,ErrorCode의 내용을 �
 
 
 ```
+[api](https://www.notion.so/039ea362cc284689890d3dece1bbbef2?v=d6911240071b4792b84f042a75f18716)

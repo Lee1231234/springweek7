@@ -1,7 +1,7 @@
 # 📝Pinterest 클론 코딩
 <br>
 
-[노션 개발일지](https://rhetorical-durian-6e6.notion.site/73948f6e42834d25bc398fa3b8495fa6?v=a25123e01c9e4b49bc1fcca129261ec0)
+[노션 개발일지](https://www.notion.so/5-5f5481ee2c6a433da01ec4540dfcea1c#9a7b99f76050417dbc57fe5ddd0e628d)
 - 와이어프레임, API, ERD
 
 ---

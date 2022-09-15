@@ -62,7 +62,7 @@ public class MemberService {
     }
 
     public ResponseEntity<?> logout(HttpServletRequest request) {
-        if (!tokenProvider.validateToken(request.getHeader("Refresh-Token"))) {
+        if (!tokenProvider.validateToken(request.getHeader("RefreshToken"))) {
             throw new BusinessException("잘못된 JWT 토큰입니다", JWT_NOT_PERMIT);
         }
         Member member = tokenProvider.getMemberFromAuthentication();
@@ -86,7 +86,7 @@ public class MemberService {
 
     public void tokenToHeaders(TokenDto tokenDto, HttpServletResponse response) {
         response.addHeader("Authorization", "Bearer " + tokenDto.getAccessToken());
-        response.addHeader("Refresh-Token", tokenDto.getRefreshToken());
+        response.addHeader("RefreshToken", tokenDto.getRefreshToken());
         response.addHeader("Access-Token-Expire-Time", tokenDto.getAccessTokenExpiresIn().toString());
     }
 

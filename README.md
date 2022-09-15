@@ -66,7 +66,7 @@ BE:
 - enum에 받을 인수 타입을 스트링으로 받았는데 타입오류가 남. -> valueOf를 사용해서 타입을 바꿔주고 실행하여 해결함.
 
 
-# 에러 핸들러 사용방법.
+### 에러 핸들러 사용방법.
 
 ```java
  throw new BusinessException("로그인 실패",LOGIN_INPUT_INVALID);
